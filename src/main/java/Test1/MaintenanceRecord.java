@@ -6,7 +6,7 @@ public class MaintenanceRecord {
     public MaintenanceRecord(String itemId, String date, String remarks) {
         this.itemId = itemId;
         this.date = date;
-        this.remarks = remarks;
+        this.remarks = remarks; // constructor
     }
 
     public String toData() {
