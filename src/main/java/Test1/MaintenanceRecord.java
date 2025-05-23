@@ -4,9 +4,9 @@ public class MaintenanceRecord {
     private String itemId, date, remarks;
 
     public MaintenanceRecord(String itemId, String date, String remarks) {
-        this.itemId = itemId;//ID User
-        this.date = date;// Tarikh login
-        this.remarks = remarks;// comment
+        this.itemId = itemId;
+        this.date = date;
+        this.remarks = remarks;
     }
 
     public String toData() {
