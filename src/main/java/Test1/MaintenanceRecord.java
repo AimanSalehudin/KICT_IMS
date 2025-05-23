@@ -5,7 +5,7 @@ public class MaintenanceRecord {
 
     public MaintenanceRecord(String itemId, String date, String remarks) {
         this.itemId = itemId;
-        this.date = date;
+        this.date = date; // constructor
         this.remarks = remarks; // constructor
     }
 
