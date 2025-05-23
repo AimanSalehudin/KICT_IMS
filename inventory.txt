@@ -3,3 +3,4 @@
 002,Monitor,Samsung 24 inch,27
 004,Table,PC Table,57
 Laptop-01,ASUS TUF LAPTOP,GENG2 GAMING,15
+123,ASDASDA,,1
