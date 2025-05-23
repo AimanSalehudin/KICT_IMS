@@ -9,7 +9,6 @@ public class MainApp extends Application {
         LoginScreen loginScreen = new LoginScreen();
         loginScreen.start(primaryStage);
 
-
     public static void main(String[] args) {
         launch(args);
     }

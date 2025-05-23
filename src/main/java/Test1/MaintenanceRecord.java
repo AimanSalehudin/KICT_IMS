@@ -27,7 +27,7 @@ public class MaintenanceRecord {
     }
 
     // Getters
-    public String getItemId() { return itemId; }//woiiiii
+    public String getItemId() { return itemId; }
     public String getDate() { return date; }
     public String getRemarks() { return remarks; }
 }
