@@ -1,0 +1,7 @@
+001,2025-05-01,Replaced battery
+003,2025-04-15,New Filter
+002,2025-05-23,New Laptop
+002,2025-05-23,BSOD
+004,2025-05-23,fix table
+004,2025-05-23,table berlobang
+Laptop-01,2025-05-23,geng2 gaming buat hal
