@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.io.*;
 import java.util.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 public class FileUtil {
     public static String validateLogin(String user, String pass) {
@@ -16,7 +18,9 @@ public class FileUtil {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts[0].equals(user) && parts[1].equals(pass)) return parts[2];
+                if (parts[0].equals(user) && parts[1].equals(pass)) {
+                    return parts[2];
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,16 +70,19 @@ public class FileUtil {
         pane.addRow(3, new Label("Quantity:"), quantity);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            InventoryItem item = new InventoryItem(
-                    id.getText(),
-                    name.getText(),
-                    desc.getText(),
-                    quantity.getValue()
-            );
-            list.add(item);
-            saveInventory(list);
-            form.close();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem item = new InventoryItem(
+                        id.getText(),
+                        name.getText(),
+                        desc.getText(),
+                        quantity.getValue()
+                );
+                list.add(item);
+                saveInventory(list);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 700, 300));
@@ -108,16 +115,19 @@ public class FileUtil {
         pane.addRow(3, new Label("Quantity:"), quantity);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            list.remove(item);
-            list.add(new InventoryItem(
-                    id.getText(),
-                    name.getText(),
-                    desc.getText(),
-                    quantity.getValue()
-            ));
-            saveInventory(list);
-            form.close();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                list.remove(item);
+                list.add(new InventoryItem(
+                        id.getText(),
+                        name.getText(),
+                        desc.getText(),
+                        quantity.getValue()
+                ));
+                saveInventory(list);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 700, 300));
@@ -148,6 +158,7 @@ public class FileUtil {
         remarks.setPrefRowCount(3);
 
         final Button save = new Button("Update");
+
         pane.setVgap(10);
         pane.setHgap(10);
         pane.addRow(0, new Label("Item ID:"), id);
@@ -155,15 +166,18 @@ public class FileUtil {
         pane.addRow(2, new Label("Remarks:"), remarks);
         pane.add(save, 1, 3);
 
-        save.setOnAction(e -> {
-            records.remove(record);
-            records.add(new MaintenanceRecord(
-                    id.getText(),
-                    datePicker.getValue().toString(),
-                    remarks.getText()
-            ));
-            saveMaintenance(records);
-            form.close();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                records.remove(record);
+                records.add(new MaintenanceRecord(
+                        id.getText(),
+                        datePicker.getValue().toString(),
+                        remarks.getText()
+                ));
+                saveMaintenance(records);
+                form.close();
+            }
         });
 
         // Styling
@@ -235,33 +249,36 @@ public class FileUtil {
         pane.addRow(3, new Label("Remarks:"), remarks);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            if (itemComboBox.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Selection Required");
-                alert.setHeaderText(null);
-                alert.setContentText("Please select an item ID");
-                alert.showAndWait();
-                return;
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (itemComboBox.getValue() == null) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Selection Required");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item ID");
+                    alert.showAndWait();
+                    return;
+                }
+
+                MaintenanceRecord record = new MaintenanceRecord(
+                        itemComboBox.getValue(),
+                        datePicker.getValue().toString(),
+                        remarks.getText()
+                );
+                records.add(record);
+
+                // Auto-schedule next maintenance (1 year later)
+                MaintenanceRecord nextRecord = new MaintenanceRecord(
+                        record.getItemId(),
+                        datePicker.getValue().plusYears(1).toString(),
+                        "Auto-scheduled yearly maintenance"
+                );
+
+                records.add(nextRecord);
+                saveMaintenance(records);
+                form.close();
             }
-
-            MaintenanceRecord record = new MaintenanceRecord(
-                    itemComboBox.getValue(),
-                    datePicker.getValue().toString(),
-                    remarks.getText()
-            );
-            records.add(record);
-
-            // Auto-schedule next maintenance (1 year later)
-            MaintenanceRecord nextRecord = new MaintenanceRecord(
-                    record.getItemId(),
-                    datePicker.getValue().plusYears(1).toString(),
-                    "Auto-scheduled yearly maintenance"
-            );
-
-            records.add(nextRecord);
-            saveMaintenance(records);
-            form.close();
         });
 
         form.setScene(new Scene(pane, 750, 300));
@@ -329,24 +346,27 @@ public class FileUtil {
         pane.addRow(3, new Label("Remarks:"), remarks);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            if (itemComboBox.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Selection Required");
-                alert.setHeaderText(null);
-                alert.setContentText("Please select an item ID");
-                alert.showAndWait();
-                return;
-            }
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (itemComboBox.getValue() == null) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Selection Required");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item ID");
+                    alert.showAndWait();
+                    return;
+                }
 
-            records.remove(record);
-            records.add(new MaintenanceRecord(
-                    itemComboBox.getValue(),
-                    datePicker.getValue().toString(),
-                    remarks.getText()
-            ));
-            saveMaintenance(records);
-            form.close();
+                records.remove(record);
+                records.add(new MaintenanceRecord(
+                        itemComboBox.getValue(),
+                        datePicker.getValue().toString(),
+                        remarks.getText()
+                ));
+                saveMaintenance(records);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 750, 300));
