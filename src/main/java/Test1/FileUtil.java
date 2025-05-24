@@ -166,7 +166,7 @@ public class FileUtil {
         pane.addRow(2, new Label("Remarks:"), remarks);
         pane.add(save, 1, 3);
 
-        save.setOnAction(new EventHandler<ActionEvent>() {
+        save.setOnAction(new EventHandler<ActionEvent>()  {
             @Override
             public void handle(ActionEvent e) {
                 records.remove(record);
@@ -249,7 +249,7 @@ public class FileUtil {
         pane.addRow(3, new Label("Remarks:"), remarks);
         pane.add(save, 1, 4);
 
-        save.setOnAction(new EventHandler<ActionEvent>() {
+        save.setOnAction(new EventHandler<ActionEvent>()  {
             @Override
             public void handle(ActionEvent e) {
                 if (itemComboBox.getValue() == null) {
