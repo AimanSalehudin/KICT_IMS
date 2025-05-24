@@ -48,16 +48,16 @@ public class FileUtil {
     }
 
     public static void addInventoryItem(Stage stage, ObservableList<InventoryItem> list) {
-        Stage form = new Stage();
-        GridPane pane = new GridPane();
+        final Stage form = new Stage();
+        final GridPane pane = new GridPane();
 
-        TextField id = new TextField();
-        TextField name = new TextField();
-        TextArea desc = new TextArea();
+        final TextField id = new TextField();
+        final TextField name = new TextField();
+        final TextArea desc = new TextArea();
         Spinner<Integer> quantity = new Spinner<>(0, Integer.MAX_VALUE, 1);
         desc.setPrefRowCount(3);
 
-        Button save = new Button("Save");
+        final Button save = new Button("Save");
         pane.setVgap(10);
         pane.setHgap(10);
         pane.addRow(0, new Label("ID:"), id);
@@ -84,20 +84,22 @@ public class FileUtil {
     }
 
     public static void updateInventoryItem(Stage stage, InventoryItem item, ObservableList<InventoryItem> list) {
-        if (item == null) return;
+        if (item == null) {
+            return;
+        }
 
         Stage form = new Stage();
         GridPane pane = new GridPane();
 
 
         String[] parts = item.toData().split(",");
-        TextField id = new TextField(parts[0]);
-        TextField name = new TextField(parts[1]);
-        TextArea desc = new TextArea(parts[2]);
+        final TextField id = new TextField(parts[0]);
+        final TextField name = new TextField(parts[1]);
+        final TextArea desc = new TextArea(parts[2]);
         Spinner<Integer> quantity = new Spinner<>(0, Integer.MAX_VALUE, Integer.parseInt(parts[3]));
         desc.setPrefRowCount(3);
 
-        Button save = new Button("Update");
+        final Button save = new Button("Update");
         pane.setVgap(10);
         pane.setHgap(10);
         pane.addRow(0, new Label("ID:"), id);
@@ -126,24 +128,26 @@ public class FileUtil {
     // Remove the duplicate method and keep this one:
     public static void updateMaintenanceRecord(Stage stage, MaintenanceRecord record,
                                                ObservableList<MaintenanceRecord> records) {
-        if (record == null) return;
+        if (record == null) {
+            return;
+        }
 
-        Stage form = new Stage();
-        GridPane pane = new GridPane();
+        final Stage form = new Stage();
+        final GridPane pane = new GridPane();
 
         // Use DatePicker instead of TextField for date
-        DatePicker datePicker = new DatePicker();
+        final DatePicker datePicker = new DatePicker();
         try {
             datePicker.setValue(java.time.LocalDate.parse(record.toData().split(",")[1]));
         } catch (Exception e) {
             datePicker.setValue(java.time.LocalDate.now());
         }
 
-        TextField id = new TextField(record.toData().split(",")[0]);
-        TextArea remarks = new TextArea(record.toData().split(",")[2]);
+        final TextField id = new TextField(record.toData().split(",")[0]);
+        final TextArea remarks = new TextArea(record.toData().split(",")[2]);
         remarks.setPrefRowCount(3);
 
-        Button save = new Button("Update");
+        final Button save = new Button("Update");
         pane.setVgap(10);
         pane.setHgap(10);
         pane.addRow(0, new Label("Item ID:"), id);
@@ -193,12 +197,12 @@ public class FileUtil {
     }
 
     public static void addMaintenanceRecord(Stage stage, ObservableList<MaintenanceRecord> records, ObservableList<InventoryItem> inventoryItems) {
-        Stage form = new Stage();
-        GridPane pane = new GridPane();
+        final Stage form = new Stage();
+        final GridPane pane = new GridPane();
 
         // Create ComboBox for item selection
-        ComboBox<String> itemComboBox = new ComboBox<>();
-        TextField itemNameField = new TextField();
+        final ComboBox<String> itemComboBox = new ComboBox<>();
+        final TextField itemNameField = new TextField();
         itemNameField.setEditable(false);
 
         // Populate ComboBox with inventory item IDs
@@ -217,11 +221,11 @@ public class FileUtil {
             }
         });
 
-        DatePicker datePicker = new DatePicker(java.time.LocalDate.now());
+        final DatePicker datePicker = new DatePicker(java.time.LocalDate.now());
         TextArea remarks = new TextArea();
         remarks.setPrefRowCount(3);
 
-        Button save = new Button("Save");
+        final Button save = new Button("Save");
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
@@ -259,14 +263,16 @@ public class FileUtil {
     public static void updateMaintenanceRecord(Stage stage, MaintenanceRecord record,
                                                ObservableList<MaintenanceRecord> records,
                                                ObservableList<InventoryItem> inventoryItems) {
-        if (record == null) return;
+        if (record == null) {
+            return;
+        }
 
-        Stage form = new Stage();
-        GridPane pane = new GridPane();
+        final Stage form = new Stage();
+        final GridPane pane = new GridPane();
 
         // Create ComboBox for item selection
-        ComboBox<String> itemComboBox = new ComboBox<>();
-        TextField itemNameField = new TextField();
+        final ComboBox<String> itemComboBox = new ComboBox<>();
+        final TextField itemNameField = new TextField();
         itemNameField.setEditable(false);
 
         // Populate ComboBox with inventory item IDs
@@ -294,17 +300,17 @@ public class FileUtil {
             }
         });
 
-        DatePicker datePicker = new DatePicker();
+        final DatePicker datePicker = new DatePicker();
         try {
             datePicker.setValue(java.time.LocalDate.parse(record.getDate()));
         } catch (Exception e) {
             datePicker.setValue(java.time.LocalDate.now());
         }
 
-        TextArea remarks = new TextArea(record.getRemarks());
+        final TextArea remarks = new TextArea(record.getRemarks());
         remarks.setPrefRowCount(3);
 
-        Button save = new Button("Update");
+        final Button save = new Button("Update");
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
