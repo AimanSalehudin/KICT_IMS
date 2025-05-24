@@ -1,5 +1,7 @@
 package Test1;
 
+import java.time.LocalDate;
+
 public class MaintenanceRecord {
     private String itemId;
     private String date;
@@ -31,6 +33,16 @@ public class MaintenanceRecord {
             return new MaintenanceRecord("N/A", "N/A", "N/A");
         }
         return new MaintenanceRecord(parts[0], parts[1], parts[2]);
+    }
+
+    public LocalDate getDateAsLocalDate() {
+        return LocalDate.parse(this.date); // Convert stored date string to LocalDate
+    }
+
+    public boolean isDueForMaintenance() {
+        LocalDate maintenanceDate = getDateAsLocalDate();
+        LocalDate dueDate = maintenanceDate.plusYears(1); // Add 1 year to the last maintenance date
+        return LocalDate.now().isAfter(dueDate) || LocalDate.now().equals(dueDate);
     }
 
     @Override

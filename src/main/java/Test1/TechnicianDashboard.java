@@ -21,8 +21,15 @@ public class TechnicianDashboard {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    setStyle("");
                 } else {
                     setText(item.toString() + "\nRemarks: " + item.getRemarks());
+
+                    if (FileUtil.isInventoryDueForMaintenance(item.getItemId())) {
+                        setStyle("-fx-background-color: #ffcccc; -fx-border-color: #ff0000;");
+                    } else {
+                        setStyle("");
+                    }
                 }
             }
         });

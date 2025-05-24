@@ -8,7 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Optional;
 
 public class AdminDashboard {
@@ -22,10 +23,19 @@ public class AdminDashboard {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    setStyle("");
                 } else {
+                    boolean isOverdue = FileUtil.isInventoryDueForMaintenance(item.getId());
                     setText(String.format("%s: %s\nDescription: %s\nQuantity: %d",
                             item.getId(), item.getName(),
                             item.getDescription(), item.getQuantity()));
+
+                    // Apply red background if overdue
+                    if (isOverdue) {
+                        setStyle("-fx-background-color: #ffcccc; -fx-border-color: #ff0000;"); // Light red with red border
+                    } else {
+                        setStyle(""); // Reset to default
+                    }
                 }
             }
         });
