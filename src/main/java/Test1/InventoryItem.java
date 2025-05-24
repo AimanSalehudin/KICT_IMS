@@ -14,9 +14,21 @@ public class InventoryItem {
         this.quantity = quantity;
     }
 
-    // Original constructor for backward compatibility
+    // Getters
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public int getQuantity() { return quantity; }
+
+    // Setters
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setDescription(String description) { this.description = description; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    // Default quantity to 0
     public InventoryItem(String id, String name, String description) {
-        this(id, name, description, 0); // Default quantity to 0
+        this(id, name, description, 0);
     }
 
     @Override
@@ -29,10 +41,10 @@ public class InventoryItem {
     }
 
     public String toDataString() {
-        return toData(); // Alias to maintain both versions
+        return toData();
     }
 
-    public static InventoryItem fromDataString(String line) {  // Renamed from fromData()
+    public static InventoryItem fromDataString(String line) {
         String[] parts = line.split(",");
         if (parts.length < 4) {
             return new InventoryItem(parts[0], parts[1], parts[2]);
@@ -43,10 +55,4 @@ public class InventoryItem {
             return new InventoryItem(parts[0], parts[1], parts[2]);
         }
     }
-
-    // Getters
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public int getQuantity() { return quantity; }
 }

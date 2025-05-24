@@ -1,13 +1,25 @@
 package Test1;
 
 public class MaintenanceRecord {
-    private String itemId, date, remarks;
+    private String itemId;
+    private String date;
+    private String remarks;
 
     public MaintenanceRecord(String itemId, String date, String remarks) {
         this.itemId = itemId;
         this.date = date;
         this.remarks = remarks;
     }
+
+    // Getters
+    public String getItemId() { return itemId; }
+    public String getDate() { return date; }
+    public String getRemarks() { return remarks; }
+
+    // Setters
+    public void setItemId(String itemId) { this.itemId = itemId; }
+    public void setDate(String date) { this.date = date; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
     public String toData() {
         return String.join(",", itemId, date, remarks);
@@ -25,9 +37,4 @@ public class MaintenanceRecord {
     public String toString() {
         return itemId + " - " + date;
     }
-
-    // Getters
-    public String getItemId() { return itemId; }
-    public String getDate() { return date; }
-    public String getRemarks() { return remarks; }
 }
