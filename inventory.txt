@@ -1,6 +1,6 @@
 001,Laptop,Dell Inspiron,41
-003,Projector,Super Expensive,28
 002,Monitor,Samsung 24 inch,27
+003,Projector,Super Expensive,28
 004,Table,PC Table,57
-Laptop-01,ASUS TUF LAPTOP,GENG2 GAMING,15
-123,ASDASDA,,1
+005,ASUS TUF LAPTOP,GENG2 GAMING,15
+123,Keyboard,Mechanical,10

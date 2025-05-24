@@ -6,7 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import java.time.LocalDate;
 import java.io.*;
 import java.util.*;
 
@@ -247,6 +247,15 @@ public class FileUtil {
                     remarks.getText()
             );
             records.add(record);
+
+            // Auto-schedule next maintenance (1 year later)
+            MaintenanceRecord nextRecord = new MaintenanceRecord(
+                    record.getItemId(),
+                    datePicker.getValue().plusYears(1).toString(),
+                    "Auto-scheduled yearly maintenance"
+            );
+
+            records.add(nextRecord);
             saveMaintenance(records);
             form.close();
         });
@@ -337,5 +346,17 @@ public class FileUtil {
         form.setScene(new Scene(pane, 750, 300));
         form.setTitle("Update Maintenance Record");
         form.show();
+    }
+
+    public static boolean isInventoryDueForMaintenance(String itemId) {
+        List<MaintenanceRecord> records = loadMaintenance();
+        Optional<MaintenanceRecord> latestRecord = records.stream()
+                .filter(r -> r.getItemId().equals(itemId))
+                .max(Comparator.comparing(r -> LocalDate.parse(r.getDate())));
+
+        return latestRecord.map(record -> {
+            LocalDate dueDate = LocalDate.parse(record.getDate()).plusYears(1);
+            return LocalDate.now().isAfter(dueDate) || LocalDate.now().equals(dueDate);
+        }).orElse(false);
     }
 }
