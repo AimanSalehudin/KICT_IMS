@@ -1,5 +1,7 @@
 package Test1;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,7 +16,7 @@ import java.io.*;
 
 public class LoginScreen {
     public void start(Stage stage) {
-        // Create logo
+        // Insert logo
         ImageView logo = new ImageView(new Image("https://kulliyyah.iium.edu.my/kict/wp-content/uploads/sites/3/2024/01/iium-kict-logo-simple.png"));
         logo.setFitWidth(200);
         logo.setPreserveRatio(true);
@@ -39,19 +41,27 @@ public class LoginScreen {
         passwordField.setStyle("-fx-padding: 8px;");
         message.setStyle("-fx-text-fill: red;");
 
-        loginBtn.setOnAction(e -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            String role = FileUtil.validateLogin(username, password);
-            if (role != null) {
-                if (role.equals("admin")) new AdminDashboard().start(stage);
-                else new TechnicianDashboard().start(stage);
-            } else {
-                message.setText("Invalid login.");
+        loginBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                String role = FileUtil.validateLogin(username, password);
+                if (role != null) {
+                    if (role.equals("admin")) new AdminDashboard().start(stage);
+                    else new TechnicianDashboard().start(stage);
+                } else {
+                    message.setText("Invalid login.");
+                }
             }
         });
 
-        exitBtn.setOnAction(e -> stage.close() );
+        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                stage.close();
+            }
+        });
 
         HBox btnBox = new HBox(5);
         btnBox.getChildren().addAll(loginBtn, exitBtn);
