@@ -64,6 +64,7 @@ public class FileUtil {
         Button save = new Button("Save");
         pane.setVgap(10);
         pane.setHgap(10);
+        pane.setPadding(new Insets(20));
         pane.addRow(0, new Label("ID:"), id);
         pane.addRow(1, new Label("Name:"), name);
         pane.addRow(2, new Label("Description:"), desc);
@@ -77,7 +78,7 @@ public class FileUtil {
             form.close();
         });
 
-        form.setScene(new Scene(pane, 700, 300));
+        form.setScene(new Scene(pane, 750, 300));
         form.setTitle("Add Inventory");
         form.show();
     }
@@ -97,6 +98,7 @@ public class FileUtil {
         Button save = new Button("Update");
         pane.setVgap(10);
         pane.setHgap(10);
+        pane.setPadding(new Insets(20));
         pane.addRow(0, new Label("ID:"), id);
         pane.addRow(1, new Label("Name:"), name);
         pane.addRow(2, new Label("Description:"), desc);
@@ -110,7 +112,7 @@ public class FileUtil {
             form.close();
         });
 
-        form.setScene(new Scene(pane, 700, 300));
+        form.setScene(new Scene(pane, 750, 300));
         form.setTitle("Update Inventory");
         form.show();
     }
