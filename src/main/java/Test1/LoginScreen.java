@@ -82,7 +82,7 @@ public class LoginScreen {
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
 
-        Scene scene = new Scene(root, 500, 350); // Increased height
+        Scene scene = new Scene(root, 500, 400); // Increased height
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();
