@@ -2,9 +2,11 @@ package Test1;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.io.*;
@@ -17,6 +19,7 @@ public class FileUtil {
     private static final String MAINTENANCE_FILE = "maintenance.txt";
     private static final String USERS_FILE = "users.txt";
 
+    // Validate Users Login
     public static String validateLogin(String user, String pass) {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
@@ -32,6 +35,7 @@ public class FileUtil {
         return null;
     }
 
+    // Load Inventory from File
     public static List<InventoryItem> loadInventory() {
         List<InventoryItem> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))) {
@@ -45,6 +49,7 @@ public class FileUtil {
         return list;
     }
 
+    // Save Inventory to File
     public static void saveInventory(List<InventoryItem> items) {
         try (PrintWriter pw = new PrintWriter(INVENTORY_FILE)) {
             for (InventoryItem item : items) {
@@ -55,6 +60,7 @@ public class FileUtil {
         }
     }
 
+    // Add Inventory Item
     public static void addInventoryItem(Stage stage, ObservableList<InventoryItem> list) {
         Stage form = new Stage();
         GridPane pane = new GridPane();
@@ -66,6 +72,13 @@ public class FileUtil {
         desc.setPrefRowCount(3);
 
         Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(5);
+        btnBox.getChildren().addAll(save, cancel);
+        btnBox.setAlignment(Pos.TOP_LEFT);
+        btnBox.setPadding(new Insets(10));
+
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
@@ -73,7 +86,7 @@ public class FileUtil {
         pane.addRow(1, new Label("Name:"), name);
         pane.addRow(2, new Label("Description:"), desc);
         pane.addRow(3, new Label("Quantity:"), quantity);
-        pane.add(save, 1, 4);
+        pane.add(btnBox, 1, 4);
 
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -84,12 +97,19 @@ public class FileUtil {
                 form.close();
             }
         });
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
 
         form.setScene(new Scene(pane, 750, 300));
         form.setTitle("Add Inventory");
         form.show();
     }
 
+    // Update Inventory Item
     public static void updateInventoryItem(Stage stage, InventoryItem item, ObservableList<InventoryItem> list) {
         if (item == null) return;
 
@@ -103,6 +123,13 @@ public class FileUtil {
         desc.setPrefRowCount(3);
 
         Button save = new Button("Update");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(5);
+        btnBox.getChildren().addAll(save, cancel);
+        btnBox.setAlignment(Pos.TOP_LEFT);
+        btnBox.setPadding(new Insets(10));
+
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
@@ -110,7 +137,7 @@ public class FileUtil {
         pane.addRow(1, new Label("Name:"), name);
         pane.addRow(2, new Label("Description:"), desc);
         pane.addRow(3, new Label("Quantity:"), quantity);
-        pane.add(save, 1, 4);
+        pane.add(btnBox, 1, 4);
 
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -121,83 +148,81 @@ public class FileUtil {
                 form.close();
             }
         });
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
 
         form.setScene(new Scene(pane, 750, 300));
         form.setTitle("Update Inventory");
         form.show();
     }
 
+    // Load Maintenance from File
     public static List<MaintenanceRecord> loadMaintenance() {
         List<MaintenanceRecord> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(MAINTENANCE_FILE))) {
             String line;
-            while ((line = br.readLine()) != null) list.add(MaintenanceRecord.fromData(line));
+            while ((line = br.readLine()) != null) {
+                list.add(MaintenanceRecord.fromData(line));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return list;
     }
 
+    // Save Maintenance to File
     public static void saveMaintenance(List<MaintenanceRecord> records) {
         try (PrintWriter pw = new PrintWriter(MAINTENANCE_FILE)) {
-            for (MaintenanceRecord record : records) pw.println(record.toData());
+            for (MaintenanceRecord record : records) {
+                pw.println(record.toData());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Add Maintenance Record
     public static void addMaintenanceRecord(Stage stage, ObservableList<MaintenanceRecord> records, ObservableList<InventoryItem> inventoryItems) {
         Stage form = new Stage();
         GridPane pane = new GridPane();
 
-        ComboBox<String> itemComboBox = new ComboBox<>();
-        TextField itemNameField = new TextField();
-        itemNameField.setEditable(false);
-
-        for (InventoryItem item : inventoryItems) itemComboBox.getItems().add(item.getId());
-
-        itemComboBox.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                String selectedId = itemComboBox.getValue();
-                for (InventoryItem item : inventoryItems) {
-                    if (item.getId().equals(selectedId)) {
-                        itemNameField.setText(item.getName());
-                        break;
-                    }
-                }
-            }
-        });
-
+        TextField itemIdField = new TextField();
         DatePicker datePicker = new DatePicker(LocalDate.now());
         TextArea remarks = new TextArea();
         remarks.setPrefRowCount(3);
 
         Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(5);
+        btnBox.getChildren().addAll(save, cancel);
+        btnBox.setAlignment(Pos.TOP_LEFT);
+        btnBox.setPadding(new Insets(10));
+
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
-        pane.addRow(0, new Label("Item ID:"), itemComboBox);
-        pane.addRow(1, new Label("Item Name:"), itemNameField);
-        pane.addRow(2, new Label("Date:"), datePicker);
-        pane.addRow(3, new Label("Remarks:"), remarks);
-        pane.add(save, 1, 4);
+        pane.addRow(0, new Label("Item ID:"), itemIdField);
+        pane.addRow(1, new Label("Date:"), datePicker);
+        pane.addRow(2, new Label("Remarks:"), remarks);
+        pane.add(btnBox, 1, 3);
 
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                if (itemComboBox.getValue() == null) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Selection Required");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please select an item ID");
-                    alert.showAndWait();
-                    return;
-                }
-
-                MaintenanceRecord record = new MaintenanceRecord(itemComboBox.getValue(), datePicker.getValue().toString(), remarks.getText());
+                MaintenanceRecord record = new MaintenanceRecord(itemIdField.getText(), datePicker.getValue().toString(), remarks.getText());
                 records.add(record);
                 saveMaintenance(records);
+                form.close();
+            }
+        });
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
                 form.close();
             }
         });
@@ -207,6 +232,57 @@ public class FileUtil {
         form.show();
     }
 
+    // Update Maintenance record
+    public static void updateMaintenanceRecord(Stage stage, MaintenanceRecord record, ObservableList<MaintenanceRecord> list) {
+        if (record == null) return;
+
+        Stage form = new Stage();
+        GridPane pane = new GridPane();
+
+        TextField itemIdField = new TextField(record.getItemId());
+        itemIdField.setEditable(false);
+        DatePicker datePicker = new DatePicker(LocalDate.parse(record.getDate()));
+        TextArea remarks = new TextArea(record.getRemarks());
+        remarks.setPrefRowCount(3);
+
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(5);
+        btnBox.getChildren().addAll(save, cancel);
+        btnBox.setAlignment(Pos.TOP_LEFT);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("Item ID:"), itemIdField);
+        pane.addRow(1, new Label("Date:"), datePicker);
+        pane.addRow(2, new Label("Remarks:"), remarks);
+        pane.add(btnBox, 1, 3);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                list.remove(record);
+                list.add(new MaintenanceRecord(itemIdField.getText(), datePicker.getValue().toString(), remarks.getText()));
+                saveMaintenance(list);
+                form.close();
+            }
+        });
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        form.setScene(new Scene(pane, 750, 300));
+        form.setTitle("Update Maintenance Record");
+        form.show();
+    }
+
+    // Check if Inventory is due
     public static boolean isInventoryDueForMaintenance(String itemId) {
         List<MaintenanceRecord> records = loadMaintenance();
         MaintenanceRecord latestRecord = null;

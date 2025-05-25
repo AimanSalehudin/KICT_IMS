@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
@@ -48,8 +49,14 @@ public class TechnicianDashboard {
             public void handle(ActionEvent event) {
                 MaintenanceRecord selected = listView.getSelectionModel().getSelectedItem();
                 if (selected != null) {
-                    FileUtil.addMaintenanceRecord(stage, records, inventoryItems);
-
+                    FileUtil.updateMaintenanceRecord(stage, selected, records);
+                } else {
+                    // Show alert if no item is selected
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("No Selection");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item to update");
+                    alert.showAndWait();
                 }
             }
         });
