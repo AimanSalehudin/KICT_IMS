@@ -48,7 +48,8 @@ public class TechnicianDashboard {
             public void handle(ActionEvent event) {
                 MaintenanceRecord selected = listView.getSelectionModel().getSelectedItem();
                 if (selected != null) {
-                    FileUtil.updateMaintenanceRecord(stage, selected, records, inventoryItems);
+                    FileUtil.addMaintenanceRecord(stage, records, inventoryItems);
+
                 }
             }
         });

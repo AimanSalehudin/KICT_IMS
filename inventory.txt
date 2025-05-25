@@ -3,4 +3,5 @@
 003,Projector,Super Expensive,28
 004,Table,PC Table,57
 005,ASUS TUF LAPTOP,GENG2 GAMING,15
-123,Keyboard,Mechanical,10
+444,Monitor,have crack on the screen,1
+123,keyboard,mechanical,10
