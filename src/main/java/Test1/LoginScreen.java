@@ -53,13 +53,18 @@ public class LoginScreen {
 
         exitBtn.setOnAction(e -> stage.close() );
 
+        HBox btnBox = new HBox(5);
+        btnBox.getChildren().addAll(loginBtn, exitBtn);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setPadding(new Insets(20));
         grid.setVgap(15); grid.setHgap(15);
         grid.add(userLabel, 0, 1); grid.add(usernameField, 1, 1);
         grid.add(passLabel, 0, 2); grid.add(passwordField, 1, 2);
-        grid.add(loginBtn, 1, 3); grid.add(exitBtn, 2, 3);
+        grid.add(btnBox, 1, 3);
         grid.add(message, 1, 4);
 
         VBox root = new VBox(15, logo, welcomeLabel, grid);
