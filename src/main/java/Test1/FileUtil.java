@@ -13,12 +13,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class FileUtil {
+    private static final String INVENTORY_FILE = "inventory.txt";
+    private static final String MAINTENANCE_FILE = "maintenance.txt";
+    private static final String USERS_FILE = "users.txt";
+
     public static String validateLogin(String user, String pass) {
-        try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts[0].equals(user) && parts[1].equals(pass)) {
+                if (parts.length == 3 && parts[0].equals(user) && parts[1].equals(pass)) {
                     return parts[2];
                 }
             }
@@ -30,7 +34,7 @@ public class FileUtil {
 
     public static List<InventoryItem> loadInventory() {
         List<InventoryItem> list = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("inventory.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 list.add(InventoryItem.fromDataString(line));
@@ -42,7 +46,7 @@ public class FileUtil {
     }
 
     public static void saveInventory(List<InventoryItem> items) {
-        try (PrintWriter pw = new PrintWriter("inventory.txt")) {
+        try (PrintWriter pw = new PrintWriter(INVENTORY_FILE)) {
             for (InventoryItem item : items) {
                 pw.println(item.toDataString());
             }
@@ -71,11 +75,14 @@ public class FileUtil {
         pane.addRow(3, new Label("Quantity:"), quantity);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            InventoryItem item = new InventoryItem(id.getText(), name.getText(), desc.getText(), quantity.getValue());
-            list.add(item);
-            saveInventory(list);
-            form.close();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem item = new InventoryItem(id.getText(), name.getText(), desc.getText(), quantity.getValue());
+                list.add(item);
+                saveInventory(list);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 750, 300));
@@ -105,11 +112,14 @@ public class FileUtil {
         pane.addRow(3, new Label("Quantity:"), quantity);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            list.remove(item);
-            list.add(new InventoryItem(id.getText(), name.getText(), desc.getText(), quantity.getValue()));
-            saveInventory(list);
-            form.close();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                list.remove(item);
+                list.add(new InventoryItem(id.getText(), name.getText(), desc.getText(), quantity.getValue()));
+                saveInventory(list);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 750, 300));
@@ -119,7 +129,7 @@ public class FileUtil {
 
     public static List<MaintenanceRecord> loadMaintenance() {
         List<MaintenanceRecord> list = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("maintenance.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(MAINTENANCE_FILE))) {
             String line;
             while ((line = br.readLine()) != null) list.add(MaintenanceRecord.fromData(line));
         } catch (IOException e) {
@@ -129,7 +139,7 @@ public class FileUtil {
     }
 
     public static void saveMaintenance(List<MaintenanceRecord> records) {
-        try (PrintWriter pw = new PrintWriter("maintenance.txt")) {
+        try (PrintWriter pw = new PrintWriter(MAINTENANCE_FILE)) {
             for (MaintenanceRecord record : records) pw.println(record.toData());
         } catch (IOException e) {
             e.printStackTrace();
@@ -146,12 +156,15 @@ public class FileUtil {
 
         for (InventoryItem item : inventoryItems) itemComboBox.getItems().add(item.getId());
 
-        itemComboBox.setOnAction(e -> {
-            String selectedId = itemComboBox.getValue();
-            for (InventoryItem item : inventoryItems) {
-                if (item.getId().equals(selectedId)) {
-                    itemNameField.setText(item.getName());
-                    break;
+        itemComboBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                String selectedId = itemComboBox.getValue();
+                for (InventoryItem item : inventoryItems) {
+                    if (item.getId().equals(selectedId)) {
+                        itemNameField.setText(item.getName());
+                        break;
+                    }
                 }
             }
         });
@@ -170,20 +183,23 @@ public class FileUtil {
         pane.addRow(3, new Label("Remarks:"), remarks);
         pane.add(save, 1, 4);
 
-        save.setOnAction(e -> {
-            if (itemComboBox.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Selection Required");
-                alert.setHeaderText(null);
-                alert.setContentText("Please select an item ID");
-                alert.showAndWait();
-                return;
-            }
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (itemComboBox.getValue() == null) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Selection Required");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item ID");
+                    alert.showAndWait();
+                    return;
+                }
 
-            MaintenanceRecord record = new MaintenanceRecord(itemComboBox.getValue(), datePicker.getValue().toString(), remarks.getText());
-            records.add(record);
-            saveMaintenance(records);
-            form.close();
+                MaintenanceRecord record = new MaintenanceRecord(itemComboBox.getValue(), datePicker.getValue().toString(), remarks.getText());
+                records.add(record);
+                saveMaintenance(records);
+                form.close();
+            }
         });
 
         form.setScene(new Scene(pane, 750, 300));
@@ -202,14 +218,10 @@ public class FileUtil {
                 }
             }
         }
-
         if (latestRecord != null) {
             LocalDate dueDate = LocalDate.parse(latestRecord.getDate()).plusYears(1);
             return LocalDate.now().isAfter(dueDate) || LocalDate.now().equals(dueDate);
         }
-
         return false;
     }
-
-
 }
