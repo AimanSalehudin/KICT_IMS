@@ -11,6 +11,9 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Optional;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
 
 public class AdminDashboard {
     ObservableList<InventoryItem> items = FXCollections.observableArrayList(FileUtil.loadInventory());
@@ -52,37 +55,56 @@ public class AdminDashboard {
         deleteBtn.setStyle(buttonStyle);
         backBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
 
-        addBtn.setOnAction(e -> FileUtil.addInventoryItem(stage, items));
-        // In AdminDashboard.java - update the updateBtn action handler
-        updateBtn.setOnAction(e -> {
-            InventoryItem selected = listView.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                FileUtil.updateInventoryItem(stage, selected, items);
-            } else {
-                // Show alert if no item is selected
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("No Selection");
-                alert.setHeaderText(null);
-                alert.setContentText("Please select an item to update");
-                alert.showAndWait();
+        addBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                FileUtil.addInventoryItem(stage, items);
             }
         });
-        deleteBtn.setOnAction(e -> {
-            InventoryItem item = listView.getSelectionModel().getSelectedItem();
-            if (item != null) {
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Confirm Deletion");
-                confirm.setHeaderText("Delete Item: " + item.getName());
-                confirm.setContentText("Are you sure you want to delete this item?");
-
-                Optional<ButtonType> result = confirm.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    items.remove(item);
-                    FileUtil.saveInventory(items);
+        
+        // In AdminDashboard.java - update the updateBtn action handler
+        updateBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem selected = listView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    FileUtil.updateInventoryItem(stage, selected, items);
+                } else {
+                    // Show alert if no item is selected
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("No Selection");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item to update");
+                    alert.showAndWait();
                 }
             }
         });
-        backBtn.setOnAction(e -> new LoginScreen().start(stage));
+        
+        deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem item = listView.getSelectionModel().getSelectedItem();
+                if (item != null) {
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Deletion");
+                    confirm.setHeaderText("Delete Item: " + item.getName());
+                    confirm.setContentText("Are you sure you want to delete this item?");
+
+                    Optional<ButtonType> result = confirm.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        items.remove(item);
+                        FileUtil.saveInventory(items);
+                    }
+                }
+            }
+        });
+        
+        backBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                new LoginScreen().start(stage);
+            }
+        });
 
         HBox buttonBox = new HBox(10, addBtn, updateBtn, deleteBtn);
         buttonBox.setAlignment(Pos.CENTER);
