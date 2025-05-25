@@ -13,6 +13,9 @@ import java.util.Comparator;
 import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.util.Callback;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 
 
 public class AdminDashboard {
@@ -20,26 +23,32 @@ public class AdminDashboard {
 
     public void start(Stage stage) {
         ListView<InventoryItem> listView = new ListView<>(items);
-        listView.setCellFactory(lv -> new ListCell<InventoryItem>() {
-            @Override
-            protected void updateItem(InventoryItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    boolean isOverdue = FileUtil.isInventoryDueForMaintenance(item.getId());
-                    setText(String.format("%s: %s\nDescription: %s\nQuantity: %d",
-                            item.getId(), item.getName(),
-                            item.getDescription(), item.getQuantity()));
 
-                    // Apply red background if overdue
-                    if (isOverdue) {
-                        setStyle("-fx-background-color: #ffcccc; -fx-border-color: #ff0000;"); // Light red with red border
-                    } else {
-                        setStyle(""); // Reset to default
+        listView.setCellFactory(new Callback<ListView<InventoryItem>, ListCell<InventoryItem>>() {
+            @Override
+            public ListCell<InventoryItem> call(ListView<InventoryItem> lv) {
+                return new ListCell<InventoryItem>() {
+                    @Override
+                    protected void updateItem(InventoryItem item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle("");
+                        } else {
+                            boolean isOverdue = FileUtil.isInventoryDueForMaintenance(item.getId());
+                            setText(String.format("%s: %s\nDescription: %s\nQuantity: %d",
+                                    item.getId(), item.getName(),
+                                    item.getDescription(), item.getQuantity()));
+
+                            // Apply red background if overdue
+                            if (isOverdue) {
+                                setStyle("-fx-background-color: #ffcccc; -fx-border-color: #ff0000;");
+                            } else {
+                                setStyle("");
+                            }
+                        }
                     }
-                }
+                };
             }
         });
 
