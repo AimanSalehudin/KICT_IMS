@@ -103,6 +103,13 @@ public class AdminDashboard {
                         items.remove(item);
                         FileUtil.saveInventory(items);
                     }
+                } else {
+                    // Show alert if no item is selected
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("No Selection");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item to delete");
+                    alert.showAndWait();
                 }
             }
         });
