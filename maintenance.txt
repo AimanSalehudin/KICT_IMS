@@ -1,7 +1,6 @@
 001,2025-05-01,Replaced battery
+002,2025-05-23,New Laptop; BSOD
 003,2025-04-15,New Filter
-002,2025-05-23,New Laptop
-002,2025-05-23,BSOD
-004,2025-05-23,fix table
-004,2025-05-23,table berlobang
-Laptop-01,2025-05-23,geng2 gaming buat hal
+004,2025-05-23,fix table; table berlobang
+005,2025-05-23,geng2 gaming buat hal
+123,2024-05-17,baikiiiii

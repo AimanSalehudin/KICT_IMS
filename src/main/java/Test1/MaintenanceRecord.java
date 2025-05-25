@@ -1,13 +1,27 @@
 package Test1;
 
+import java.time.LocalDate;
+
 public class MaintenanceRecord {
-    private String itemId, date, remarks;
+    private String itemId;
+    private String date;
+    private String remarks;
 
     public MaintenanceRecord(String itemId, String date, String remarks) {
         this.itemId = itemId;
         this.date = date;
-        this.remarks = remarks;
+        this.remarks = remarks; //emansa edit
     }
+
+    // Getters
+    public String getItemId() { return itemId; }
+    public String getDate() { return date; }
+    public String getRemarks() { return remarks; }
+
+    // Setters
+    public void setItemId(String itemId) { this.itemId = itemId; }
+    public void setDate(String date) { this.date = date; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
     public String toData() {
         return String.join(",", itemId, date, remarks);
@@ -21,13 +35,18 @@ public class MaintenanceRecord {
         return new MaintenanceRecord(parts[0], parts[1], parts[2]);
     }
 
+    public LocalDate getDateAsLocalDate() {
+        return LocalDate.parse(this.date); // Convert stored date string to LocalDate
+    }
+
+    public boolean isDueForMaintenance() {
+        LocalDate maintenanceDate = getDateAsLocalDate();
+        LocalDate dueDate = maintenanceDate.plusYears(1); // Add 1 year to the last maintenance date
+        return LocalDate.now().isAfter(dueDate) || LocalDate.now().equals(dueDate);
+    }
+
     @Override
     public String toString() {
         return itemId + " - " + date;
     }
-
-    // Getters
-    public String getItemId() { return itemId; }
-    public String getDate() { return date; }
-    public String getRemarks() { return remarks; }
 }
