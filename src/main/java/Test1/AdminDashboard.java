@@ -17,7 +17,6 @@ import javafx.util.Callback;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 
-
 public class AdminDashboard {
     ObservableList<InventoryItem> items = FXCollections.observableArrayList(FileUtil.loadInventory());
 
