@@ -240,12 +240,11 @@ public class FileUtil {
         GridPane pane = new GridPane();
 
         TextField itemIdField = new TextField(record.getItemId());
-        itemIdField.setEditable(false);
         DatePicker datePicker = new DatePicker(LocalDate.parse(record.getDate()));
         TextArea remarks = new TextArea(record.getRemarks());
         remarks.setPrefRowCount(3);
 
-        Button save = new Button("Save");
+        Button save = new Button("Update");
         Button cancel = new Button("Cancel");
 
         HBox btnBox = new HBox(5);
