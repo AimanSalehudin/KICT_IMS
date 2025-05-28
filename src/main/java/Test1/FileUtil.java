@@ -190,7 +190,11 @@ public class FileUtil {
         Stage form = new Stage();
         GridPane pane = new GridPane();
 
-        TextField itemIdField = new TextField();
+        ComboBox<String> itemComboBox = new ComboBox<>();
+        for (InventoryItem item : inventoryItems) {
+            itemComboBox.getItems().add(item.getId());
+        }
+
         DatePicker datePicker = new DatePicker(LocalDate.now());
         TextArea remarks = new TextArea();
         remarks.setPrefRowCount(3);
@@ -206,7 +210,7 @@ public class FileUtil {
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setPadding(new Insets(20));
-        pane.addRow(0, new Label("Item ID:"), itemIdField);
+        pane.addRow(0, new Label("Item ID:"), itemComboBox);
         pane.addRow(1, new Label("Date:"), datePicker);
         pane.addRow(2, new Label("Remarks:"), remarks);
         pane.add(btnBox, 1, 3);
@@ -214,7 +218,16 @@ public class FileUtil {
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                MaintenanceRecord record = new MaintenanceRecord(itemIdField.getText(), datePicker.getValue().toString(), remarks.getText());
+                if (itemComboBox.getValue() == null) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Selection Required");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please select an item ID");
+                    alert.showAndWait();
+                    return;
+                }
+
+                MaintenanceRecord record = new MaintenanceRecord(itemComboBox.getValue(), datePicker.getValue().toString(), remarks.getText());
                 records.add(record);
                 saveMaintenance(records);
                 form.close();
@@ -240,6 +253,7 @@ public class FileUtil {
         GridPane pane = new GridPane();
 
         TextField itemIdField = new TextField(record.getItemId());
+        itemIdField.setEditable(false);
         DatePicker datePicker = new DatePicker(LocalDate.parse(record.getDate()));
         TextArea remarks = new TextArea(record.getRemarks());
         remarks.setPrefRowCount(3);

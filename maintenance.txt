@@ -4,6 +4,5 @@
 004,2025-05-23,fix table; table berlobang
 005,2025-05-23,geng2 gaming buat hal
 123,2025-05-25,baikiiiii
-444,2025-05-25,already change the screen
 117,2025-04-15,broken Logitech wired mouse
-
+444,2025-05-26,
