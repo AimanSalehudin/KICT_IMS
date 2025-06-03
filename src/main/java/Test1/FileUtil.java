@@ -23,6 +23,7 @@ public class FileUtil {
     public static String validateLogin(String user, String pass) {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
+            System.out.println("File user is being read.");
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 3 && parts[0].equals(user) && parts[1].equals(pass)) {
@@ -30,6 +31,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException e) {
+            System.out.println("Role not found...");
             e.printStackTrace();
         }
         return null;
@@ -40,10 +42,12 @@ public class FileUtil {
         List<InventoryItem> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))) {
             String line;
+            System.out.println("File inventory is being read.");
             while ((line = br.readLine()) != null) {
                 list.add(InventoryItem.fromDataString(line));
             }
         } catch (IOException e) {
+            System.out.println("File not found...");
             e.printStackTrace();
         }
         return list;

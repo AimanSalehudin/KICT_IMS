@@ -91,7 +91,10 @@ public class TechnicianDashboard {
         backBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                stage.hide();
+                stage.setScene(null);
                 LoginScreen login = new LoginScreen();
+                stage.setMaximized(true);
                 login.start(stage);
             }
         });
@@ -105,9 +108,10 @@ public class TechnicianDashboard {
         root.getChildren().addAll(listView, buttonBox, backBtn);
 
         // Set Scene and Stage
-        Scene scene = new Scene(root, 400, 500);
-        stage.setTitle("Technician Dashboard");
+        Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setTitle("Technician Dashboard");
+        stage.setMaximized(true);
         stage.show();
     }
 }

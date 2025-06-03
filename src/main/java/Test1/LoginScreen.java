@@ -48,8 +48,15 @@ public class LoginScreen {
                 String password = passwordField.getText();
                 String role = FileUtil.validateLogin(username, password);
                 if (role != null) {
-                    if (role.equals("admin")) new AdminDashboard().start(stage);
-                    else new TechnicianDashboard().start(stage);
+                    stage.hide();
+                    stage.setScene(null);
+                    if (role.equals("admin")) {
+                        new AdminDashboard().start(stage);
+                    } else {
+                        new TechnicianDashboard().start(stage);
+                    }
+                    stage.setMaximized(true);
+                    stage.show();
                 } else {
                     message.setText("Invalid login.");
                 }
@@ -82,9 +89,10 @@ public class LoginScreen {
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
 
-        Scene scene = new Scene(root, 500, 400); // Increased height
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Login");
+        stage.setMaximized(true);
         stage.show();
     }
 }

@@ -117,6 +117,9 @@ public class AdminDashboard {
         backBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
+                stage.hide();
+                stage.setScene(null);
+                stage.setMaximized(true);
                 new LoginScreen().start(stage);
             }
         });
@@ -128,8 +131,10 @@ public class AdminDashboard {
         box.setPadding(new Insets(20));
         box.setStyle("-fx-background-color: #f5f5f5;");
 
-        stage.setScene(new Scene(box, 450, 450));
+        Scene scene = new Scene(box);;
+        stage.setScene(scene);
         stage.setTitle("Admin Dashboard");
+        stage.setMaximized(true);
         stage.show();
     }
 }
