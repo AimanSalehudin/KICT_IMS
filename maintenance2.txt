@@ -1,0 +1,5 @@
+ELEC001,2023-06-15,Routine checkup,Routine
+ELEC002,2023-05-10,Bulb replacement,Repair,Medium
+FURN001,2023-04-20,Wheel repair,Repair,Low
+FURN002,2023-03-15,Annual inspection,Inspection,John Doe
+ELEC001,2023-01-10,Initial setup,General
