@@ -1,4 +1,4 @@
-package Test2;
+package Test2.Java.model;
 
 public class GeneralUser extends User {
     public GeneralUser(String username, String password, String name, String email) {

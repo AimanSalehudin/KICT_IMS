@@ -1,4 +1,4 @@
-package Test2;
+package Test2.Java.model;
 
 public abstract class User {
     private String username;

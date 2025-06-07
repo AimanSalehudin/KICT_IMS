@@ -1,7 +1,8 @@
-package Test2;
+package Test2.javafx;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import Test2.javafx.view.LoginScreen;
 
 public class MainApp extends Application {
     @Override

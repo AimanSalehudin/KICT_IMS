@@ -1,4 +1,4 @@
-package Test2;
+package Test2.Java.model;
 
 public class TechnicianUser extends User {
     private String specialization;

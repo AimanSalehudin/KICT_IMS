@@ -1,5 +1,6 @@
-package Test2;
+package Test2.Java.util;
 
+import Test2.Java.model.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

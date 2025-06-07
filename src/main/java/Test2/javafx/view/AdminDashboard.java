@@ -1,5 +1,8 @@
-package Test2;
+package Test2.javafx.view;
 
+import Test2.Java.model.InventoryItem;
+import Test2.Java.model.User;
+import Test2.Java.util.FileUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class AdminDashboard {
     private final User currentUser;

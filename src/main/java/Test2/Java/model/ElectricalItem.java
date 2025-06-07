@@ -1,4 +1,4 @@
-package Test2;
+package Test2.Java.model;
 
 public class ElectricalItem extends InventoryItem {
     private String voltage;

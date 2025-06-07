@@ -1,5 +1,7 @@
-package Test2;
+package Test2.javafx.view;
 
+import Test2.Java.model.*;
+import Test2.Java.util.FileUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,8 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import java.time.format.DateTimeFormatter;
 
 public class TechnicianDashboard {
     private final User currentUser;

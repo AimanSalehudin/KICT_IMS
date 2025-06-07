@@ -1,5 +1,7 @@
-package Test2;
+package Test2.javafx.view;
 
+import Test2.Java.model.User;
+import Test2.Java.util.FileUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
