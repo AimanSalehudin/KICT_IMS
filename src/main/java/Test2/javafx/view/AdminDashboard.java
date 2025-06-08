@@ -5,6 +5,8 @@ import Test2.Java.model.User;
 import Test2.Java.util.FileUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class AdminDashboard {
     private final User currentUser;
@@ -44,7 +47,6 @@ public class AdminDashboard {
     private void configureTableView() {
         tableView.setItems(items);
 
-        // Add columns one by one to avoid addAll issues
         tableView.getColumns().add(createTableColumn("ID", "id", 100));
         tableView.getColumns().add(createTableColumn("Name", "name", 150));
         tableView.getColumns().add(createTableColumn("Description", "description", 250));
@@ -64,23 +66,28 @@ public class AdminDashboard {
 
     private TableColumn<InventoryItem, String> createStatusColumn() {
         TableColumn<InventoryItem, String> column = new TableColumn<>("Status");
-        column.setCellFactory(param -> new TableCell<>() {
+        column.setCellFactory(new Callback<TableColumn<InventoryItem, String>, TableCell<InventoryItem, String>>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    InventoryItem inventoryItem = getTableView().getItems().get(getIndex());
-                    if (inventoryItem.needsMaintenance()) {
-                        setText("NEEDS MAINTENANCE");
-                        setStyle("-fx-background-color: #ffcccc; -fx-text-fill: red; -fx-font-weight: bold;");
-                    } else {
-                        setText("OK");
-                        setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+            public TableCell<InventoryItem, String> call(TableColumn<InventoryItem, String> param) {
+                return new TableCell<InventoryItem, String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                            setStyle("");
+                        } else {
+                            InventoryItem inventoryItem = getTableView().getItems().get(getIndex());
+                            if (inventoryItem.needsMaintenance()) {
+                                setText("NEEDS MAINTENANCE");
+                                setStyle("-fx-background-color: #ffcccc; -fx-text-fill: red; -fx-font-weight: bold;");
+                            } else {
+                                setText("OK");
+                                setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                            }
+                        }
                     }
-                }
+                };
             }
         });
         return column;
@@ -95,41 +102,54 @@ public class AdminDashboard {
     }
 
     private void setupButtonActions() {
-        addButton.setOnAction(e -> FileUtil.addInventoryItem(
-                (Stage) addButton.getScene().getWindow(),
-                items
-        ));
-
-        updateButton.setOnAction(e -> {
-            InventoryItem selected = tableView.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                FileUtil.updateInventoryItem(
-                        (Stage) updateButton.getScene().getWindow(),
-                        selected,
+        addButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                FileUtil.addInventoryItem(
+                        (Stage) addButton.getScene().getWindow(),
                         items
                 );
-            } else {
-                showAlert("No Selection", "Please select an item to update");
             }
         });
 
-        deleteButton.setOnAction(e -> {
-            InventoryItem selected = tableView.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                if (showConfirmation("Delete Item",
-                        "Are you sure you want to delete " + selected.getName() + "?")) {
-                    items.remove(selected);
-                    FileUtil.saveInventory(items);
+        updateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem selected = tableView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    FileUtil.updateInventoryItem(
+                            (Stage) updateButton.getScene().getWindow(),
+                            selected,
+                            items
+                    );
+                } else {
+                    showAlert("No Selection", "Please select an item to update");
                 }
-            } else {
-                showAlert("No Selection", "Please select an item to delete");
             }
         });
 
-        logoutButton.setOnAction(e -> {
-            Stage stage = (Stage) logoutButton.getScene().getWindow();
-            stage.close();
-            new LoginScreen().start(new Stage());
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem selected = tableView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    if (showConfirmation("Delete Item", "Are you sure you want to delete " + selected.getName() + "?")) {
+                        items.remove(selected);
+                        FileUtil.saveInventory(items);
+                    }
+                } else {
+                    showAlert("No Selection", "Please select an item to delete");
+                }
+            }
+        });
+
+        logoutButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Stage stage = (Stage) logoutButton.getScene().getWindow();
+                stage.close();
+                new LoginScreen().start(new Stage());
+            }
         });
     }
 

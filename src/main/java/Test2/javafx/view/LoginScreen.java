@@ -2,6 +2,8 @@ package Test2.javafx.view;
 
 import Test2.Java.model.User;
 import Test2.Java.util.FileUtil;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -38,24 +40,32 @@ public class LoginScreen {
         exitBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
         message.setStyle("-fx-text-fill: red;");
 
-        loginBtn.setOnAction(e -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            User user = FileUtil.validateLogin(username, password);
+        loginBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                User user = FileUtil.validateLogin(username, password);
 
-            if (user != null) {
-                stage.close();
-                if (user.getRole().equals("admin")) {
-                    new AdminDashboard(user).start(new Stage());
+                if (user != null) {
+                    stage.close();
+                    if (user.getRole().equals("admin")) {
+                        new AdminDashboard(user).start(new Stage());
+                    } else {
+                        new TechnicianDashboard(user).start(new Stage());
+                    }
                 } else {
-                    new TechnicianDashboard(user).start(new Stage());
+                    message.setText("Invalid username or password");
                 }
-            } else {
-                message.setText("Invalid username or password");
             }
         });
 
-        exitBtn.setOnAction(e -> stage.close());
+        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                stage.close();
+            }
+        });
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
