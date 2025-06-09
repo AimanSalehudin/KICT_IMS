@@ -1,6 +1,6 @@
 FURN001,Office Chair,Ergonomic chair,15,2023-02-10,,
-FURN002,Conference Table,6-person table,3,2023-01-05,,
 GEN001,Notebook,A4 sized notebook,50,
 GEN002,Pen,Black ballpoint,100,
 ELEC003,Keyboard,Keyboard Logitech,11,,,
 ELEC002,Projector,Epson EB-U05,7,,,
+FURN002,Computer Table,Table for CPU, Monitor, Keyboard and Mouse,50,,Wood,12*12

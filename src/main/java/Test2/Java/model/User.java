@@ -46,7 +46,7 @@ public abstract class User {
             case "technician":
                 return new TechnicianUser(username, password, name, email);
             default:
-                return new GeneralUser(username, password, name, email);
+                return null;
         }
     }
 }

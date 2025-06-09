@@ -52,7 +52,6 @@ public class AdminDashboard {
         tableView.getColumns().add(createTableColumn("Description", "description", 250));
         tableView.getColumns().add(createTableColumn("Quantity", "quantity", 80));
         tableView.getColumns().add(createTableColumn("Category", "category", 100));
-        tableView.getColumns().add(createStatusColumn());
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
@@ -64,34 +63,6 @@ public class AdminDashboard {
         return column;
     }
 
-    private TableColumn<InventoryItem, String> createStatusColumn() {
-        TableColumn<InventoryItem, String> column = new TableColumn<>("Status");
-        column.setCellFactory(new Callback<TableColumn<InventoryItem, String>, TableCell<InventoryItem, String>>() {
-            @Override
-            public TableCell<InventoryItem, String> call(TableColumn<InventoryItem, String> param) {
-                return new TableCell<InventoryItem, String>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText(null);
-                            setStyle("");
-                        } else {
-                            InventoryItem inventoryItem = getTableView().getItems().get(getIndex());
-                            if (inventoryItem.needsMaintenance()) {
-                                setText("NEEDS MAINTENANCE");
-                                setStyle("-fx-background-color: #ffcccc; -fx-text-fill: red; -fx-font-weight: bold;");
-                            } else {
-                                setText("OK");
-                                setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-                            }
-                        }
-                    }
-                };
-            }
-        });
-        return column;
-    }
 
     private void styleButtons() {
         String buttonStyle = "-fx-font-weight: bold; -fx-padding: 8 15; -fx-text-fill: white; ";

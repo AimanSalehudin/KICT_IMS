@@ -1,5 +1,7 @@
 package Test2.Java.model;
 
+import Test2.Java.util.FileUtil;
+
 import java.time.LocalDate;
 
 public abstract class InventoryItem {

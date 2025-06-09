@@ -12,6 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class TechnicianDashboard {
     private final User currentUser;
     private final ObservableList<MaintenanceRecord> maintenanceRecords;
@@ -23,6 +25,7 @@ public class TechnicianDashboard {
     private final Button deleteButton = new Button("Delete Record");
     private final Button inventoryButton = new Button("View Inventory");
     private final Button logoutButton = new Button("Logout");
+    private final Button maintenanceAlertButton = new Button("Check Maintenance Alerts");
 
     public TechnicianDashboard(User user) {
         this.currentUser = user;
@@ -65,7 +68,6 @@ public class TechnicianDashboard {
         maintenanceTable.getColumns().add(dateCol);
         maintenanceTable.getColumns().add(typeCol);
         maintenanceTable.getColumns().add(remarksCol);
-        maintenanceTable.getColumns().add(actionCol);
 
         maintenanceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
@@ -99,6 +101,7 @@ public class TechnicianDashboard {
         deleteButton.setStyle(buttonStyle + "-fx-background-color: #f44336;");
         inventoryButton.setStyle(buttonStyle + "-fx-background-color: #9C27B0;");
         logoutButton.setStyle(buttonStyle + "-fx-background-color: #FF9800;");
+        maintenanceAlertButton.setStyle(buttonStyle + "-fx-background-color: #FFC107;");
     }
 
     private void setupButtonActions() {
@@ -136,13 +139,14 @@ public class TechnicianDashboard {
 
         inventoryButton.setOnAction(e -> showInventoryView());
         logoutButton.setOnAction(e -> logout());
+        maintenanceAlertButton.setOnAction(e -> showMaintenanceAlerts());
     }
 
     private Scene createMainScene() {
         Label welcomeLabel = new Label("Welcome, " + currentUser.getName() + getTechnicianSpecialization());
         welcomeLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        HBox buttonBox = new HBox(10, addButton, updateButton, deleteButton, inventoryButton);
+        HBox buttonBox = new HBox(10, addButton, updateButton, deleteButton, inventoryButton, maintenanceAlertButton);
         buttonBox.setAlignment(Pos.CENTER);
 
         VBox root = new VBox(15, welcomeLabel, maintenanceTable, buttonBox, logoutButton);
@@ -224,6 +228,26 @@ public class TechnicianDashboard {
         Stage stage = (Stage) logoutButton.getScene().getWindow();
         stage.close();
         new LoginScreen().start(new Stage());
+    }
+
+    // Add this new method to TechnicianDashboard.java:
+    private void showMaintenanceAlerts() {
+        List<InventoryItem> overdueItems = FileUtil.loadInventory().stream().filter(InventoryItem::needsMaintenance).toList();
+
+        if (overdueItems.isEmpty()) {
+            showAlert("Maintenance", "No items require maintenance");
+        } else {
+            StringBuilder alertContent = new StringBuilder("Items needing maintenance:\n");
+            overdueItems.forEach(item ->
+                    alertContent.append("- ").append(item.getName()).append(" (ID: ").append(item.getId()).append(")\n")
+            );
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Maintenance Alerts");
+            alert.setHeaderText(null);
+            alert.setContentText(alertContent.toString());
+            alert.showAndWait();
+        }
     }
 
     private void showAlert(String title, String message) {

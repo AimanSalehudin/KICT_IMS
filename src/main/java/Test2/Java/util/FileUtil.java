@@ -196,7 +196,7 @@ public class FileUtil {
         Spinner<Integer> quantity = new Spinner<>(0, Integer.MAX_VALUE, item.getQuantity());
         desc.setPrefRowCount(3);
 
-        // Type-specific fields
+        // Different item, different specs
         GridPane specificFields = new GridPane();
         if (item instanceof ElectricalItem) {
             ElectricalItem elecItem = (ElectricalItem) item;
@@ -323,7 +323,7 @@ public class FileUtil {
         specificFields.setVgap(5);
         specificFields.setHgap(5);
 
-        // Show/hide fields based on type selection
+        // to show or hide fields based on type selection
         typeCombo.setOnAction(e -> updateMaintenanceFields(typeCombo.getValue(), specificFields));
 
         Button save = new Button("Save");
@@ -545,99 +545,6 @@ public static boolean isInventoryDueForMaintenance(String itemId) {
             e.printStackTrace();
         }
         return users;
-    }
-
-    // Save users to file
-    public static void saveUsers(List<User> users) {
-        try (PrintWriter pw = new PrintWriter(USERS_FILE)) {
-            for (User user : users) {
-                pw.println(user.toDataString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Add new user
-    public static void addUser(Stage stage, ObservableList<User> users) {
-        Stage form = new Stage();
-        form.initOwner(stage);
-        GridPane pane = new GridPane();
-
-        ComboBox<String> roleCombo = new ComboBox<>();
-        roleCombo.getItems().addAll("admin", "technician", "general");
-        roleCombo.setValue("general");
-
-        TextField username = new TextField();
-        PasswordField password = new PasswordField();
-        TextField name = new TextField();
-        TextField email = new TextField();
-
-        // Technician-specific fields
-        GridPane techFields = new GridPane();
-        TextField specialization = new TextField();
-        techFields.addRow(0, new Label("Specialization:"), specialization);
-        techFields.setVisible(false);
-
-        roleCombo.setOnAction(e -> {
-            techFields.setVisible("technician".equals(roleCombo.getValue()));
-        });
-
-        Button save = new Button("Save");
-        Button cancel = new Button("Cancel");
-
-        HBox btnBox = new HBox(10, save, cancel);
-        btnBox.setAlignment(Pos.CENTER);
-        btnBox.setPadding(new Insets(10));
-
-        pane.setVgap(10);
-        pane.setHgap(10);
-        pane.setPadding(new Insets(20));
-        pane.addRow(0, new Label("Role:"), roleCombo);
-        pane.addRow(1, new Label("Username:"), username);
-        pane.addRow(2, new Label("Password:"), password);
-        pane.addRow(3, new Label("Name:"), name);
-        pane.addRow(4, new Label("Email:"), email);
-        pane.add(techFields, 0, 5, 2, 1);
-        pane.add(btnBox, 1, 6);
-
-        save.setOnAction(e -> {
-            User user = createUserBasedOnRole(
-                    roleCombo.getValue(),
-                    username.getText(),
-                    password.getText(),
-                    name.getText(),
-                    email.getText(),
-                    specialization.getText()
-            );
-
-            if (user != null) {
-                users.add(user);
-                saveUsers(users);
-                form.close();
-            }
-        });
-
-        cancel.setOnAction(e -> form.close());
-
-        Scene scene = new Scene(pane, 500, 350);
-        form.setScene(scene);
-        form.setTitle("Add New User");
-        form.showAndWait();
-    }
-
-    private static User createUserBasedOnRole(String role, String username, String password,
-                                              String name, String email, String specialization) {
-        switch (role) {
-            case "admin":
-                return new AdminUser(username, password, name, email);
-            case "technician":
-                TechnicianUser techUser = new TechnicianUser(username, password, name, email);
-                techUser.setSpecialization(specialization);
-                return techUser;
-            default:
-                return new GeneralUser(username, password, name, email);
-        }
     }
 
     // Helper method to show alerts
