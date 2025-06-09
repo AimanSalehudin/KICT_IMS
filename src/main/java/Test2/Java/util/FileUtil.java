@@ -589,6 +589,17 @@ public static boolean isInventoryDueForMaintenance(String itemId) {
         return users;
     }
 
+    // Save users to file
+    public static void saveUsers(List<User> users) {
+        try (PrintWriter pw = new PrintWriter(USERS_FILE)) {
+            for (User user : users) {
+                pw.println(user.toDataString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Helper method to show alerts
     private static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -597,5 +608,4 @@ public static boolean isInventoryDueForMaintenance(String itemId) {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }
