@@ -2,6 +2,8 @@ package Test2.Java.util;
 
 import Test2.Java.model.*;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -85,9 +87,12 @@ public class FileUtil {
         GridPane furnitureFields = createFurnitureFields();
 
         // Show/hide fields based on type selection
-        typeCombo.setOnAction(e -> {
-            electricalFields.setVisible("Electrical".equals(typeCombo.getValue()));
-            furnitureFields.setVisible("Furniture".equals(typeCombo.getValue()));
+        typeCombo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                electricalFields.setVisible("Electrical".equals(typeCombo.getValue()));
+                furnitureFields.setVisible("Furniture".equals(typeCombo.getValue()));
+            }
         });
 
         Button save = new Button("Save");
@@ -109,25 +114,33 @@ public class FileUtil {
         pane.add(furnitureFields, 0, 5, 2, 1);
         pane.add(btnBox, 1, 6);
 
-        save.setOnAction(e -> {
-            InventoryItem item = createItemBasedOnType(
-                    typeCombo.getValue(),
-                    id.getText(),
-                    name.getText(),
-                    desc.getText(),
-                    quantity.getValue(),
-                    electricalFields,
-                    furnitureFields
-            );
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                InventoryItem item = createItemBasedOnType(
+                        typeCombo.getValue(),
+                        id.getText(),
+                        name.getText(),
+                        desc.getText(),
+                        quantity.getValue(),
+                        electricalFields,
+                        furnitureFields
+                );
 
-            if (item != null) {
-                list.add(item);
-                saveInventory(list);
-                form.close();
+                if (item != null) {
+                    list.add(item);
+                    saveInventory(list);
+                    form.close();
+                }
             }
         });
 
-        cancel.setOnAction(e -> form.close());
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                form.close();
+            }
+        });
 
         Scene scene = new Scene(pane, 600, 400);
         form.setScene(scene);
@@ -229,19 +242,27 @@ public class FileUtil {
         pane.add(specificFields, 0, 4, 2, 1);
         pane.add(btnBox, 1, 5);
 
-        save.setOnAction(e -> {
-            list.remove(item);
-            InventoryItem updatedItem = createUpdatedItem(item, id.getText(), name.getText(),
-                    desc.getText(), quantity.getValue(), specificFields);
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                list.remove(item);
+                InventoryItem updatedItem = createUpdatedItem(item, id.getText(), name.getText(),
+                        desc.getText(), quantity.getValue(), specificFields);
 
-            if (updatedItem != null) {
-                list.add(updatedItem);
-                saveInventory(list);
-                form.close();
+                if (updatedItem != null) {
+                    list.add(updatedItem);
+                    saveInventory(list);
+                    form.close();
+                }
             }
         });
 
-        cancel.setOnAction(e -> form.close());
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                form.close();
+            }
+        });
 
         Scene scene = new Scene(pane, 600, 400);
         form.setScene(scene);
@@ -343,28 +364,36 @@ public class FileUtil {
         pane.add(specificFields, 0, 4, 2, 1);
         pane.add(btnBox, 1, 5);
 
-        save.setOnAction(e -> {
-            if (itemComboBox.getValue() == null) {
-                showAlert("Selection Required", "Please select an item ID");
-                return;
-            }
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (itemComboBox.getValue() == null) {
+                    showAlert("Selection Required", "Please select an item ID");
+                    return;
+                }
 
-            MaintenanceRecord record = createMaintenanceRecord(
-                    itemComboBox.getValue(),
-                    typeCombo.getValue(),
-                    datePicker.getValue(),
-                    remarks.getText(),
-                    specificFields
-            );
+                MaintenanceRecord record = createMaintenanceRecord(
+                        itemComboBox.getValue(),
+                        typeCombo.getValue(),
+                        datePicker.getValue(),
+                        remarks.getText(),
+                        specificFields
+                );
 
-            if (record != null) {
-                records.add(record);
-                saveMaintenance(records);
-                form.close();
+                if (record != null) {
+                    records.add(record);
+                    saveMaintenance(records);
+                    form.close();
+                }
             }
         });
 
-        cancel.setOnAction(e -> form.close());
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                form.close();
+            }
+        });
 
         Scene scene = new Scene(pane, 600, 400);
         form.setScene(scene);
@@ -444,7 +473,12 @@ public class FileUtil {
         }
 
         // Update fields when type changes
-        typeCombo.setOnAction(e -> updateMaintenanceFields(typeCombo.getValue(), specificFields));
+        typeCombo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                updateMaintenanceFields(typeCombo.getValue(), specificFields);
+            }
+        });
 
         Button save = new Button("Update");
         Button cancel = new Button("Cancel");
@@ -463,24 +497,32 @@ public class FileUtil {
         pane.add(specificFields, 0, 4, 2, 1);
         pane.add(btnBox, 1, 5);
 
-        save.setOnAction(e -> {
-            list.remove(record);
-            MaintenanceRecord updatedRecord = createMaintenanceRecord(
-                    itemIdField.getText(),
-                    typeCombo.getValue(),
-                    datePicker.getValue(),
-                    remarks.getText(),
-                    specificFields
-            );
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                list.remove(record);
+                MaintenanceRecord updatedRecord = createMaintenanceRecord(
+                        itemIdField.getText(),
+                        typeCombo.getValue(),
+                        datePicker.getValue(),
+                        remarks.getText(),
+                        specificFields
+                );
 
-            if (updatedRecord != null) {
-                list.add(updatedRecord);
-                saveMaintenance(list);
-                form.close();
+                if (updatedRecord != null) {
+                    list.add(updatedRecord);
+                    saveMaintenance(list);
+                    form.close();
+                }
             }
         });
 
-        cancel.setOnAction(e -> form.close());
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                form.close();
+            }
+        });
 
         Scene scene = new Scene(pane, 600, 400);
         form.setScene(scene);
