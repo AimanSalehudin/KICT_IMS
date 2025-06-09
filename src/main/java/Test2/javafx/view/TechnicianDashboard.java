@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class TechnicianDashboard {
     private final User currentUser;
@@ -46,7 +47,6 @@ public class TechnicianDashboard {
     private void configureMaintenanceTable() {
         maintenanceTable.setItems(maintenanceRecords);
 
-        // Maintenance record columns
         TableColumn<MaintenanceRecord, String> itemIdCol = new TableColumn<>("Item ID");
         itemIdCol.setCellValueFactory(new PropertyValueFactory<>("itemId"));
 
@@ -72,23 +72,33 @@ public class TechnicianDashboard {
 
     private TableColumn<MaintenanceRecord, Void> createActionColumn() {
         TableColumn<MaintenanceRecord, Void> column = new TableColumn<>("Actions");
-        column.setCellFactory(param -> new TableCell<>() {
-            private final Button detailsButton = new Button("Details");
 
-            {
-                detailsButton.setOnAction(event -> {
-                    MaintenanceRecord record = getTableView().getItems().get(getIndex());
-                    showRecordDetails(record);
-                });
-                detailsButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
-            }
-
+        column.setCellFactory(new Callback<TableColumn<MaintenanceRecord, Void>, TableCell<MaintenanceRecord, Void>>() {
             @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : detailsButton);
+            public TableCell<MaintenanceRecord, Void> call(TableColumn<MaintenanceRecord, Void> param) {
+                return new TableCell<MaintenanceRecord, Void>() {
+                    private final Button detailsButton = new Button("Details");
+
+                    {
+                        detailsButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+                            @Override
+                            public void handle(javafx.event.ActionEvent event) {
+                                MaintenanceRecord record = getTableView().getItems().get(getIndex());
+                                showRecordDetails(record);
+                            }
+                        });
+                        detailsButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+                    }
+
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setGraphic(empty ? null : detailsButton);
+                    }
+                };
             }
         });
+
         return column;
     }
 
@@ -102,40 +112,62 @@ public class TechnicianDashboard {
     }
 
     private void setupButtonActions() {
-        addButton.setOnAction(e -> FileUtil.addMaintenanceRecord(
-                (Stage) addButton.getScene().getWindow(),
-                maintenanceRecords,
-                inventoryItems
-        ));
-
-        updateButton.setOnAction(e -> {
-            MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                FileUtil.updateMaintenanceRecord(
-                        (Stage) updateButton.getScene().getWindow(),
-                        selected,
-                        maintenanceRecords
+        addButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent e) {
+                FileUtil.addMaintenanceRecord(
+                        (Stage) addButton.getScene().getWindow(),
+                        maintenanceRecords,
+                        inventoryItems
                 );
-            } else {
-                showAlert("No Selection", "Please select a record to update");
             }
         });
 
-        deleteButton.setOnAction(e -> {
-            MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                if (showConfirmation("Delete Record",
-                        "Are you sure you want to delete this maintenance record?")) {
-                    maintenanceRecords.remove(selected);
-                    FileUtil.saveMaintenance(maintenanceRecords);
+        updateButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent e) {
+                MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    FileUtil.updateMaintenanceRecord(
+                            (Stage) updateButton.getScene().getWindow(),
+                            selected,
+                            maintenanceRecords
+                    );
+                } else {
+                    showAlert("No Selection", "Please select a record to update");
                 }
-            } else {
-                showAlert("No Selection", "Please select a record to delete");
             }
         });
 
-        inventoryButton.setOnAction(e -> showInventoryView());
-        logoutButton.setOnAction(e -> logout());
+        deleteButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent e) {
+                MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    if (showConfirmation("Delete Record",
+                            "Are you sure you want to delete this maintenance record?")) {
+                        maintenanceRecords.remove(selected);
+                        FileUtil.saveMaintenance(maintenanceRecords);
+                    }
+                } else {
+                    showAlert("No Selection", "Please select a record to delete");
+                }
+            }
+        });
+
+        inventoryButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent e) {
+                showInventoryView();
+            }
+        });
+
+        logoutButton.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent e) {
+                logout();
+            }
+        });
     }
 
     private Scene createMainScene() {
@@ -195,7 +227,6 @@ public class TechnicianDashboard {
 
         TableView<InventoryItem> inventoryTable = new TableView<>(inventoryItems);
 
-        // Proper inventory item columns
         TableColumn<InventoryItem, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
