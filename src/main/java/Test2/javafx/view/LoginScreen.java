@@ -1,7 +1,11 @@
 package Test2.javafx.view;
 
+import Test2.Java.model.AdminUser;
+import Test2.Java.model.GeneralUser;
+import Test2.Java.model.TechnicianUser;
 import Test2.Java.model.User;
 import Test2.Java.util.FileUtil;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -87,5 +91,103 @@ public class LoginScreen {
         stage.setWidth(400);
         stage.setHeight(400);
         stage.show();
+    }
+    // Add new user
+    public static void addUser(Stage stage, ObservableList<User> users) {
+        Stage form = new Stage();
+        form.initOwner(stage);
+        GridPane pane = new GridPane();
+
+        ComboBox<String> roleCombo = new ComboBox<>();
+        roleCombo.getItems().addAll("admin", "technician", "general");
+        roleCombo.setValue("general");
+
+        TextField username = new TextField();
+        PasswordField password = new PasswordField();
+        TextField name = new TextField();
+        TextField email = new TextField();
+
+        // Technician-specific fields
+        GridPane techFields = new GridPane();
+        TextField specialization = new TextField();
+        techFields.addRow(0, new Label("Specialization:"), specialization);
+        techFields.setVisible(false);
+
+        roleCombo.setOnAction(e -> {
+            techFields.setVisible("technician".equals(roleCombo.getValue()));
+        });
+
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(10, save, cancel);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("Role:"), roleCombo);
+        pane.addRow(1, new Label("Username:"), username);
+        pane.addRow(2, new Label("Password:"), password);
+        pane.addRow(3, new Label("Name:"), name);
+        pane.addRow(4, new Label("Email:"), email);
+        pane.add(techFields, 0, 5, 2, 1);
+        pane.add(btnBox, 1, 6);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                User user = createUserBasedOnRole(
+                        roleCombo.getValue(),
+                        username.getText(),
+                        password.getText(),
+                        name.getText(),
+                        email.getText(),
+                        specialization.getText()
+                );
+
+                if (user != null) {
+                    users.add(user);
+                    FileUtil.saveUsers(users);
+                    form.close();
+                }
+            }
+        });
+
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        Scene scene = new Scene(pane, 500, 350);
+        form.setScene(scene);
+        form.setTitle("Add New User");
+        form.showAndWait();
+    }
+
+    private static User createUserBasedOnRole(String role, String username, String password,
+                                              String name, String email, String specialization) {
+        switch (role) {
+            case "admin":
+                return new AdminUser(username, password, name, email);
+            case "technician":
+                TechnicianUser techUser = new TechnicianUser(username, password, name, email);
+                techUser.setSpecialization(specialization);
+                return techUser;
+            default:
+                return new GeneralUser(username, password, name, email);
+        }
+    }
+
+    // Helper method to show alerts
+    private static void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

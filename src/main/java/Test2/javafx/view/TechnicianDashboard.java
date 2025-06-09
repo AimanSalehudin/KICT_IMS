@@ -4,6 +4,8 @@ import Test2.Java.model.*;
 import Test2.Java.util.FileUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.time.LocalDate;
 
 public class TechnicianDashboard {
     private final User currentUser;
@@ -102,40 +106,60 @@ public class TechnicianDashboard {
     }
 
     private void setupButtonActions() {
-        addButton.setOnAction(e -> FileUtil.addMaintenanceRecord(
-                (Stage) addButton.getScene().getWindow(),
-                maintenanceRecords,
-                inventoryItems
-        ));
-
-        updateButton.setOnAction(e -> {
-            MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                FileUtil.updateMaintenanceRecord(
-                        (Stage) updateButton.getScene().getWindow(),
-                        selected,
-                        maintenanceRecords
-                );
-            } else {
-                showAlert("No Selection", "Please select a record to update");
+        addButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                addMaintenanceRecord(
+                    (Stage) addButton.getScene().getWindow(),
+                    maintenanceRecords,
+                    inventoryItems);
             }
         });
 
-        deleteButton.setOnAction(e -> {
-            MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                if (showConfirmation("Delete Record",
-                        "Are you sure you want to delete this maintenance record?")) {
-                    maintenanceRecords.remove(selected);
-                    FileUtil.saveMaintenance(maintenanceRecords);
+        updateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    updateMaintenanceRecord(
+                            (Stage) updateButton.getScene().getWindow(),
+                            selected,
+                            maintenanceRecords
+                    );
+                } else {
+                    showAlert("No Selection", "Please select a record to update");
                 }
-            } else {
-                showAlert("No Selection", "Please select a record to delete");
             }
         });
 
-        inventoryButton.setOnAction(e -> showInventoryView());
-        logoutButton.setOnAction(e -> logout());
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                MaintenanceRecord selected = maintenanceTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    if (showConfirmation("Delete Record",
+                            "Are you sure you want to delete this maintenance record?")) {
+                        maintenanceRecords.remove(selected);
+                        FileUtil.saveMaintenance(maintenanceRecords);
+                    }
+                } else {
+                    showAlert("No Selection", "Please select a record to delete");
+                }
+            }
+        });
+
+        inventoryButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                showInventoryView();
+            }
+        });
+        logoutButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                logout();
+            }
+        });
     }
 
     private Scene createMainScene() {
@@ -240,5 +264,205 @@ public class TechnicianDashboard {
         alert.setHeaderText(null);
         alert.setContentText(message);
         return alert.showAndWait().get() == ButtonType.OK;
+    }
+    // Add Maintenance Record
+    public static void addMaintenanceRecord(Stage stage, ObservableList<MaintenanceRecord> records,
+                                            ObservableList<InventoryItem> inventoryItems) {
+        Stage form = new Stage();
+        form.initOwner(stage);
+        GridPane pane = new GridPane();
+
+        ComboBox<String> itemComboBox = new ComboBox<>();
+        for (InventoryItem item : inventoryItems) {
+            itemComboBox.getItems().add(item.getId());
+        }
+
+        ComboBox<String> typeCombo = new ComboBox<>();
+        typeCombo.getItems().addAll("Routine", "Repair", "Inspection", "General");
+        typeCombo.setValue("General");
+
+        DatePicker datePicker = new DatePicker(LocalDate.now());
+        TextArea remarks = new TextArea();
+        remarks.setPrefRowCount(3);
+
+        // Type-specific fields
+        GridPane specificFields = new GridPane();
+        specificFields.setVgap(5);
+        specificFields.setHgap(5);
+
+        // Show/hide fields based on type selection
+        typeCombo.setOnAction(e -> updateMaintenanceFields(typeCombo.getValue(), specificFields));
+
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(10, save, cancel);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("Item ID:"), itemComboBox);
+        pane.addRow(1, new Label("Type:"), typeCombo);
+        pane.addRow(2, new Label("Date:"), datePicker);
+        pane.addRow(3, new Label("Remarks:"), remarks);
+        pane.add(specificFields, 0, 4, 2, 1);
+        pane.add(btnBox, 1, 5);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                MaintenanceRecord record = createMaintenanceRecord(
+                        itemComboBox.getValue(),
+                        typeCombo.getValue(),
+                        datePicker.getValue(),
+                        remarks.getText(),
+                        specificFields
+                );
+
+                if (record != null) {
+                    records.add(record);
+                    FileUtil.saveMaintenance(records);
+                    form.close();
+                }
+            }
+        });
+
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        Scene scene = new Scene(pane, 600, 400);
+        form.setScene(scene);
+        form.setTitle("Add Maintenance Record");
+        form.showAndWait();
+    }
+
+    private static void updateMaintenanceFields(String type, GridPane pane) {
+        pane.getChildren().clear();
+
+        switch (type) {
+            case "Repair":
+                TextField severity = new TextField();
+                pane.addRow(0, new Label("Severity:"), severity);
+                break;
+            case "Inspection":
+                TextField inspector = new TextField();
+                pane.addRow(0, new Label("Inspector:"), inspector);
+                break;
+        }
+    }
+
+    private static MaintenanceRecord createMaintenanceRecord(String itemId, String type,
+                                                             LocalDate date, String remarks, GridPane specificFields) {
+        switch (type) {
+            case "Routine":
+                return new RoutineMaintenance(itemId, date, remarks);
+            case "Repair":
+                RepairMaintenance repair = new RepairMaintenance(itemId, date, remarks);
+                TextField severity = (TextField) specificFields.getChildren().get(1);
+                repair.setSeverity(severity.getText());
+                return repair;
+            case "Inspection":
+                InspectionMaintenance inspection = new InspectionMaintenance(itemId, date, remarks);
+                TextField inspector = (TextField) specificFields.getChildren().get(1);
+                inspection.setInspector(inspector.getText());
+                return inspection;
+            default:
+                return new GeneralMaintenance(itemId, date, remarks);
+        }
+    }
+
+    // Update Maintenance record
+    public static void updateMaintenanceRecord(Stage stage, MaintenanceRecord record,
+                                               ObservableList<MaintenanceRecord> list) {
+        if (record == null) return;
+
+        Stage form = new Stage();
+        form.initOwner(stage);
+        GridPane pane = new GridPane();
+
+        TextField itemIdField = new TextField(record.getItemId());
+        itemIdField.setEditable(false);
+
+        ComboBox<String> typeCombo = new ComboBox<>();
+        typeCombo.getItems().addAll("Routine", "Repair", "Inspection", "General");
+        typeCombo.setValue(record.getMaintenanceType());
+
+        DatePicker datePicker = new DatePicker(record.getDate());
+        TextArea remarks = new TextArea(record.getRemarks());
+        remarks.setPrefRowCount(3);
+
+        // Type-specific fields
+        GridPane specificFields = new GridPane();
+        specificFields.setVgap(5);
+        specificFields.setHgap(5);
+
+        // Initialize fields based on record type
+        if (record instanceof RepairMaintenance) {
+            RepairMaintenance repair = (RepairMaintenance) record;
+            TextField severity = new TextField(repair.getSeverity());
+            specificFields.addRow(0, new Label("Severity:"), severity);
+        } else if (record instanceof InspectionMaintenance) {
+            InspectionMaintenance inspection = (InspectionMaintenance) record;
+            TextField inspector = new TextField(inspection.getInspector());
+            specificFields.addRow(0, new Label("Inspector:"), inspector);
+        }
+
+        // Update fields when type changes
+        typeCombo.setOnAction(e -> updateMaintenanceFields(typeCombo.getValue(), specificFields));
+
+        Button save = new Button("Update");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(10, save, cancel);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("Item ID:"), itemIdField);
+        pane.addRow(1, new Label("Type:"), typeCombo);
+        pane.addRow(2, new Label("Date:"), datePicker);
+        pane.addRow(3, new Label("Remarks:"), remarks);
+        pane.add(specificFields, 0, 4, 2, 1);
+        pane.add(btnBox, 1, 5);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                list.remove(record);
+                MaintenanceRecord updatedRecord = createMaintenanceRecord(
+                        itemIdField.getText(),
+                        typeCombo.getValue(),
+                        datePicker.getValue(),
+                        remarks.getText(),
+                        specificFields
+                );
+
+                if (updatedRecord != null) {
+                    list.add(updatedRecord);
+                    FileUtil.saveMaintenance(list);
+                    form.close();
+                }
+            }
+        });
+
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        Scene scene = new Scene(pane, 600, 400);
+        form.setScene(scene);
+        form.setTitle("Update Maintenance Record");
+        form.showAndWait();
     }
 }
