@@ -531,7 +531,6 @@ public class FileUtil {
     }
 
 // Check if Inventory is due for maintenance
-// Check if Inventory is due for maintenance
 public static boolean isInventoryDueForMaintenance(String itemId) {
     List<MaintenanceRecord> records = loadMaintenance();
     MaintenanceRecord latestRecord = null;

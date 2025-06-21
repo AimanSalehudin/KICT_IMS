@@ -19,12 +19,12 @@ public class LoginScreen {
     public void start(Stage stage) {
         // Insert logo
         ImageView logo = new ImageView(new Image("https://kulliyyah.iium.edu.my/kict/wp-content/uploads/sites/3/2024/01/iium-kict-logo-simple.png"));
-        logo.setFitWidth(200);
+        logo.setFitWidth(250);
         logo.setPreserveRatio(true);
 
         // Welcome text
         Label welcomeLabel = new Label("Welcome to KICT Inventory Management System");
-        welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         welcomeLabel.setStyle("-fx-text-fill: #2a9df4;");
 
         Label userLabel = new Label("Username:");
@@ -74,11 +74,17 @@ public class LoginScreen {
         grid.setHgap(15);
         grid.addRow(0, userLabel, usernameField);
         grid.addRow(1, passLabel, passwordField);
-        grid.addRow(2, loginBtn, exitBtn);
+
+        HBox buttonBox = new HBox(15);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBox.getChildren().addAll(exitBtn, loginBtn);
+        grid.add(buttonBox, 1, 2);
+
+
         grid.add(message, 1, 3);
 
-        VBox root = new VBox(15, logo, welcomeLabel, grid);
-        root.setAlignment(Pos.TOP_CENTER);
+        VBox root = new VBox(25, logo, welcomeLabel, grid);
+        root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
 
@@ -86,6 +92,7 @@ public class LoginScreen {
         stage.setTitle("Login - KICT Inventory System");
         stage.setWidth(400);
         stage.setHeight(400);
+        stage.setMaximized(true);
         stage.show();
     }
 }
