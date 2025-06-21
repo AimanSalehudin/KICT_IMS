@@ -1,7 +1,6 @@
 package Test2.javafx.view;
 
-import Test2.Java.model.InventoryItem;
-import Test2.Java.model.User;
+import Test2.Java.model.*;
 import Test2.Java.util.FileUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -76,7 +75,7 @@ public class AdminDashboard {
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                FileUtil.addInventoryItem(
+                addInventoryItem(
                         (Stage) addButton.getScene().getWindow(),
                         items
                 );
@@ -88,7 +87,7 @@ public class AdminDashboard {
             public void handle(ActionEvent e) {
                 InventoryItem selected = tableView.getSelectionModel().getSelectedItem();
                 if (selected != null) {
-                    FileUtil.updateInventoryItem(
+                    updateInventoryItem(
                             (Stage) updateButton.getScene().getWindow(),
                             selected,
                             items
@@ -152,5 +151,228 @@ public class AdminDashboard {
         alert.setHeaderText(null);
         alert.setContentText(message);
         return alert.showAndWait().get() == ButtonType.OK;
+    }
+    // Add Inventory Item
+    public static void addInventoryItem(Stage stage, ObservableList<InventoryItem> list) {
+        Stage form = new Stage();
+        form.initOwner(stage);
+        GridPane pane = new GridPane();
+
+        // Common fields
+        TextField id = new TextField();
+        TextField name = new TextField();
+        TextArea desc = new TextArea();
+        Spinner<Integer> quantity = new Spinner<>(0, Integer.MAX_VALUE, 1);
+        desc.setPrefRowCount(3);
+
+        // Item type selection
+        ComboBox<String> typeCombo = new ComboBox<>();
+        typeCombo.getItems().addAll("General", "Electrical", "Furniture");
+        typeCombo.setValue("General");
+
+        // Type-specific fields
+        GridPane electricalFields = createElectricalFields();
+        GridPane furnitureFields = createFurnitureFields();
+
+        // Show/hide fields based on type selection
+        typeCombo.setOnAction(e -> {
+            electricalFields.setVisible("Electrical".equals(typeCombo.getValue()));
+            furnitureFields.setVisible("Furniture".equals(typeCombo.getValue()));
+        });
+
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(10, save, cancel);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("Type:"), typeCombo);
+        pane.addRow(1, new Label("ID:"), id);
+        pane.addRow(2, new Label("Name:"), name);
+        pane.addRow(3, new Label("Description:"), desc);
+        pane.addRow(4, new Label("Quantity:"), quantity);
+        pane.add(electricalFields, 0, 5, 2, 1);
+        pane.add(furnitureFields, 0, 5, 2, 1);
+        pane.add(btnBox, 1, 6);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                InventoryItem item = createItemBasedOnType(
+                        typeCombo.getValue(),
+                        id.getText(),
+                        name.getText(),
+                        desc.getText(),
+                        quantity.getValue(),
+                        electricalFields,
+                        furnitureFields
+                );
+
+                if (item != null) {
+                    list.add(item);
+                    FileUtil.saveInventory(list);
+                    form.close();
+                }
+            }
+        });
+
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        Scene scene = new Scene(pane, 600, 400);
+        form.setScene(scene);
+        form.setTitle("Add Inventory Item");
+        form.showAndWait();
+    }
+
+    private static GridPane createElectricalFields() {
+        GridPane pane = new GridPane();
+        TextField voltage = new TextField();
+        TextField powerSource = new TextField();
+        pane.addRow(0, new Label("Voltage:"), voltage);
+        pane.addRow(1, new Label("Power Source:"), powerSource);
+        pane.setVgap(5);
+        pane.setHgap(5);
+        pane.setVisible(false);
+        return pane;
+    }
+
+    private static GridPane createFurnitureFields() {
+        GridPane pane = new GridPane();
+        TextField material = new TextField();
+        TextField dimensions = new TextField();
+        pane.addRow(0, new Label("Material:"), material);
+        pane.addRow(1, new Label("Dimensions:"), dimensions);
+        pane.setVgap(5);
+        pane.setHgap(5);
+        pane.setVisible(false);
+        return pane;
+    }
+
+    private static InventoryItem createItemBasedOnType(String type, String id, String name,
+                                                       String desc, int quantity, GridPane electricalFields, GridPane furnitureFields) {
+        switch (type) {
+            case "Electrical":
+                ElectricalItem elecItem = new ElectricalItem(id, name, desc, quantity);
+                TextField voltage = (TextField) electricalFields.getChildren().get(1);
+                TextField powerSource = (TextField) electricalFields.getChildren().get(3);
+                elecItem.setVoltage(voltage.getText());
+                elecItem.setPowerSource(powerSource.getText());
+                return elecItem;
+            case "Furniture":
+                FurnitureItem furnItem = new FurnitureItem(id, name, desc, quantity);
+                TextField material = (TextField) furnitureFields.getChildren().get(1);
+                TextField dimensions = (TextField) furnitureFields.getChildren().get(3);
+                furnItem.setMaterial(material.getText());
+                furnItem.setDimensions(dimensions.getText());
+                return furnItem;
+            default:
+                return new GeneralItem(id, name, desc, quantity);
+        }
+    }
+
+    // Update Inventory Item
+    public static void updateInventoryItem(Stage stage, InventoryItem item, ObservableList<InventoryItem> list) {
+        if (item == null) return;
+
+        Stage form = new Stage();
+        form.initOwner(stage);
+        GridPane pane = new GridPane();
+
+        // Common fields
+        TextField id = new TextField(item.getId());
+        TextField name = new TextField(item.getName());
+        TextArea desc = new TextArea(item.getDescription());
+        Spinner<Integer> quantity = new Spinner<>(0, Integer.MAX_VALUE, item.getQuantity());
+        desc.setPrefRowCount(3);
+
+        // Type-specific fields
+        GridPane specificFields = new GridPane();
+        if (item instanceof ElectricalItem) {
+            ElectricalItem elecItem = (ElectricalItem) item;
+            TextField voltage = new TextField(elecItem.getVoltage());
+            TextField powerSource = new TextField(elecItem.getPowerSource());
+            specificFields.addRow(0, new Label("Voltage:"), voltage);
+            specificFields.addRow(1, new Label("Power Source:"), powerSource);
+        } else if (item instanceof FurnitureItem) {
+            FurnitureItem furnItem = (FurnitureItem) item;
+            TextField material = new TextField(furnItem.getMaterial());
+            TextField dimensions = new TextField(furnItem.getDimensions());
+            specificFields.addRow(0, new Label("Material:"), material);
+            specificFields.addRow(1, new Label("Dimensions:"), dimensions);
+        }
+
+        Button save = new Button("Update");
+        Button cancel = new Button("Cancel");
+
+        HBox btnBox = new HBox(10, save, cancel);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(10));
+
+        pane.setVgap(10);
+        pane.setHgap(10);
+        pane.setPadding(new Insets(20));
+        pane.addRow(0, new Label("ID:"), id);
+        pane.addRow(1, new Label("Name:"), name);
+        pane.addRow(2, new Label("Description:"), desc);
+        pane.addRow(3, new Label("Quantity:"), quantity);
+        pane.add(specificFields, 0, 4, 2, 1);
+        pane.add(btnBox, 1, 5);
+
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                list.remove(item);
+                InventoryItem updatedItem = createUpdatedItem(item, id.getText(), name.getText(),
+                        desc.getText(), quantity.getValue(), specificFields);
+
+                if (updatedItem != null) {
+                    list.add(updatedItem);
+                    FileUtil.saveInventory(list);
+                    form.close();
+                }
+            }
+        });
+
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                form.close();
+            }
+        });
+
+        Scene scene = new Scene(pane, 600, 400);
+        form.setScene(scene);
+        form.setTitle("Update Inventory Item");
+        form.showAndWait();
+    }
+
+    private static InventoryItem createUpdatedItem(InventoryItem original, String id, String name,
+                                                   String desc, int quantity, GridPane specificFields) {
+        if (original instanceof ElectricalItem) {
+            ElectricalItem item = new ElectricalItem(id, name, desc, quantity);
+            TextField voltage = (TextField) specificFields.getChildren().get(1);
+            TextField powerSource = (TextField) specificFields.getChildren().get(3);
+            item.setVoltage(voltage.getText());
+            item.setPowerSource(powerSource.getText());
+            return item;
+        } else if (original instanceof FurnitureItem) {
+            FurnitureItem item = new FurnitureItem(id, name, desc, quantity);
+            TextField material = (TextField) specificFields.getChildren().get(1);
+            TextField dimensions = (TextField) specificFields.getChildren().get(3);
+            item.setMaterial(material.getText());
+            item.setDimensions(dimensions.getText());
+            return item;
+        } else {
+            return new GeneralItem(id, name, desc, quantity);
+        }
     }
 }
